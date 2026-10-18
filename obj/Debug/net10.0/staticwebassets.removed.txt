@@ -1,0 +1,6 @@
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_1.jpg
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_2.jpg
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_3.jpg
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_4.jpg
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_5.jpg
+D:\SGU Nam 4 HK1\DOTNET ThucHanh\BTTuan4\ShopUI\wwwroot\images\ao_6.jpg
