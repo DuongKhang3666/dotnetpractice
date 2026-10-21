@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+@using ShopAccessories.Services
+@inject AdminStateService AdminState
+
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="admin-logo">
+            <h2>Admin</h2>
+        </div>
+        <nav class="admin-menu">
+            <a href="/admin" class="@(CurrentUrl.EndsWith("/admin") ? "active" : "")">Dashboard</a>
+            <a href="/admin/products" class="@(CurrentUrl.Contains("/admin/products") ? "active" : "")">Sản phẩm</a>
+            <a href="/admin/orders" class="@(CurrentUrl.Contains("/admin/orders") ? "active" : "")">Đơn hàng</a>
+            <a href="/admin/customers" class="@(CurrentUrl.Contains("/admin/customers") ? "active" : "")">Khách hàng</a>
+        </nav>
+    </aside>
+
+    <div class="admin-content">
+        <header class="admin-topbar">
+            <div>Admin Panel</div>
+            <a href="/" class="btn btn-outline">Xem website</a>
+        </header>
+
+        <main>
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+    private string CurrentUrl => Uri.UnescapeDataString(new Uri(NavigationManager.Uri).AbsolutePath);
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+}

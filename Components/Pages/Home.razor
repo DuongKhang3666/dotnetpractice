@@ -1,0 +1,59 @@
+@page "/"
+@using ShopAccessories.Models
+@using ShopAccessories.Data
+
+<PageTitle>Trang chủ</PageTitle>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>ShopAccessories</h1>
+        <p>Phụ kiện thời trang cho bạn</p>
+        <a href="/products" class="btn btn-primary">Shop now</a>
+    </div>
+</section>
+
+<section class="categories">
+    <h2>Danh mục sản phẩm</h2>
+    <div class="category-grid">
+        <a href="/products?category=V%C3%AD" class="category-card">
+            <i>👛</i>
+            <span>Ví</span>
+        </a>
+        <a href="/products?category=T%C3%BAi%20x%C3%A1ch" class="category-card">
+            <i>👜</i>
+            <span>Túi xách</span>
+        </a>
+        <a href="/products?category=Balo" class="category-card">
+            <i>🎒</i>
+            <span>Balo</span>
+        </a>
+        <a href="/products?category=Th%E1%BA%AFt%20l%C6%B0ng" class="category-card">
+            <i>➰</i>
+            <span>Thắt lưng</span>
+        </a>
+        <a href="/products?category=M%C5%A9" class="category-card">
+            <i>🧢</i>
+            <span>Mũ</span>
+        </a>
+    </div>
+</section>
+
+<section class="featured-products">
+    <h2>Sản phẩm giảm giá</h2>
+    <div class="product-grid">
+        @foreach (var product in ProductData.Products.Where(p => p.OldPrice.HasValue))
+        {
+            <ProductCard Product="product" ShowOldPrice="true" />
+        }
+    </div>
+</section>
+
+<section class="featured-products">
+    <h2>Sản phẩm nổi bật</h2>
+    <div class="product-grid">
+        @foreach (var product in ProductData.Products.OrderByDescending(p => p.Rating).Take(4))
+        {
+            <ProductCard Product="product" ShowOldPrice="false" />
+        }
+    </div>
+</section>

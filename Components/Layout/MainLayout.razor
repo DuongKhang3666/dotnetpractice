@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+@using ShopAccessories.Services
+@inject CartService CartService
+
+<header class="sticky-header">
+    <div class="header-content">
+        <a href="/" class="logo">ShopAccessories</a>
+        <nav class="menu">
+            <a href="/">Trang chủ</a>
+            <a href="/products">Sản phẩm</a>
+            <a href="/cart">Giỏ hàng</a>
+            <a href="/admin" class="admin-link">Quản trị viên</a>
+        </nav>
+        <div class="header-actions">
+            <input type="search" placeholder="Tìm kiếm..." class="search-input" />
+            <a href="/cart" class="cart-icon">
+                <span class="cart-badge">@CartService.TotalQuantity</span>
+                <i class="fi fi-ss-cart"></i>
+            </a>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="content">
+        @Body
+    </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+        <p>&copy; 2026 ShopAccessories. All rights reserved.</p>
+        <p>Liên hệ: 0909.123.456 - email: shop@example.com</p>
+    </div>
+</footer>

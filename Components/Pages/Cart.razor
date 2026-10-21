@@ -1,0 +1,84 @@
+@page "/cart"
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@using System.Globalization
+@inject CartService CartService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Giỏ hàng</PageTitle>
+
+@if (CartService.GetCartItems().Any())
+{
+    <div class="cart-page">
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Thành tiền</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in CartService.GetCartItems())
+                {
+                    <tr class="cart-item">
+                        <td class="product-info">
+                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="cart-item-image" />
+                            <div>
+                                <strong>@item.Product.Name</strong>
+                            </div>
+                        </td>
+                        <td class="price">@item.Product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                        <td class="quantity">
+                            <input type="number" min="1" @bind="item.Quantity" @bind:event="oninput" class="quantity-input" />
+                        </td>
+                        <td class="total">@item.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                        <td class="action">
+                            <button class="btn btn-outline" @onclick="(() => RemoveItem(item.Product.Id))">Xóa</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Tạm tính:</span>
+                <span>@CartService.SubTotal.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+            </div>
+            <div class="summary-row">
+                <span>Phí ship:</span>
+                <span>@(CartService.Shipping == 0 ? "Miễn phí" : CartService.Shipping.ToString("N0", new CultureInfo("vi-VN")) + " ₫")</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>Tổng cộng:</span>
+                <span>@CartService.GrandTotal.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+            </div>
+            <div class="cart-actions">
+                <a href="/products" class="btn btn-outline">Tiếp tục mua sắm</a>
+                <button class="btn btn-primary" @onclick="ProceedToCheckout">Thanh toán</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="empty-cart">
+        <p>Giỏ hàng của bạn hiện đang trống.</p>
+        <a href="/products" class="btn btn-primary">Mua sắm ngay</a>
+    </div>
+}
+
+@code {
+    private void RemoveItem(int productId)
+    {
+        CartService.Remove(productId);
+    }
+
+    private void ProceedToCheckout()
+    {
+        NavigationManager.NavigateTo("/checkout");
+    }
+}

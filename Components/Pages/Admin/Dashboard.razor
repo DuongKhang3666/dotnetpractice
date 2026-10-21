@@ -1,0 +1,81 @@
+@page "/admin"
+@layout AdminLayout
+@using System.Globalization
+@using ShopAccessories.Services
+@using System.Text
+@using Microsoft.AspNetCore.Components
+@inject AdminStateService AdminState
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="dashboard">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Doanh thu</h3>
+            <p class="stat-value">@TotalRevenue.ToString("N0", new CultureInfo("vi-VN")) ₫</p>
+        </div>
+        <div class="stat-card">
+            <h3>Số đơn hàng</h3>
+            <p class="stat-value">@AdminState.Orders.Count</p>
+        </div>
+        <div class="stat-card">
+            <h3>Khách hàng</h3>
+            <p class="stat-value">@AdminState.Customers.Count</p>
+        </div>
+        <div class="stat-card">
+            <h3>Sản phẩm</h3>
+            <p class="stat-value">@AdminState.Products.Count</p>
+        </div>
+    </div>
+
+    <div class="tables-grid">
+        <div class="table-container">
+            <h3>Đơn hàng mới nhất</h3>
+            <div class="order-list">
+                @foreach (var order in AdminState.Orders.OrderByDescending(o => o.CreatedAt).Take(5))
+                {
+                    <div class="order-item">
+                        <div class="order-item-left">
+                            <span>#@order.Id</span>
+                            <span>@order.CustomerName</span>
+                        </div>
+                        <div class="order-item-center">
+                            <span>@order.CreatedAt.ToString("dd/MM/yyyy")</span>
+                        </div>
+                        <div class="order-item-right">
+                            <span>@order.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+                            <span class="status-badge @order.StatusColor">@order.StatusText</span>
+                            <a href="/admin/orders/@order.Id" class="btn btn-outline btn-sm">Chi tiết</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3>Sản phẩm sắp hết hàng (stock &lt; 5)</h3>
+            <div class="product-list">
+                @foreach (var product in AdminState.Products.Where(p => p.Stock < 5).OrderBy(p => p.Stock))
+                {
+                    <div class="product-item">
+                        <div class="product-item-left">
+                            <img src="@product.ImageUrl" alt="@product.Name" class="product-image-small" />
+                        </div>
+                        <div class="product-item-center">
+                            <span>@product.Name</span>
+                            <span>@product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+                        </div>
+                        <div class="product-item-right">
+                            <span>@product.Stock</span>
+                            <a href="/admin/products/edit/@product.Id" class="btn btn-outline btn-sm">Sửa</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private decimal TotalRevenue => AdminState.Orders.Where(o => o.Status == OrderStatus.Completed).Sum(o => o.Total);
+}

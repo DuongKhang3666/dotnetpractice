@@ -1,0 +1,109 @@
+@page "/admin/products/edit/{Id:int}"
+@layout AdminLayout
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@inject AdminStateService AdminState
+@inject NavigationManager NavigationManager
+
+<PageTitle>Sửa sản phẩm</PageTitle>
+
+@if (product == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="admin-product-form">
+        <h1>Sửa sản phẩm</h1>
+        <EditForm Model="@product" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="name">Tên sản phẩm:</label>
+                <input id="name" @bind="product.Name" class="form-input" />
+                <ValidationMessage For="@(() => product.Name)" />
+            </div>
+
+            <div class="form-group">
+                <label for="category">Danh mục:</label>
+                <select id="category" @bind="product.Category" class="form-input">
+                    <option value="Ví">Ví</option>
+                    <option value="Túi xách">Túi xách</option>
+                    <option value="Balo">Balo</option>
+                    <option value="Thắt lưng">Thắt lưng</option>
+                    <option value="Mũ">Mũ</option>
+                </select>
+                <ValidationMessage For="@(() => product.Category)" />
+            </div>
+
+            <div class="form-group">
+                <label for="price">Giá (đ):</label>
+                <input id="price" type="number" @bind="product.Price" class="form-input" />
+                <ValidationMessage For="@(() => product.Price)" />
+            </div>
+
+            <div class="form-group">
+                <label for="oldPrice">Giá cũ (đ) (optional):</label>
+                <input id="oldPrice" type="number" @bind="product.OldPrice" class="form-input" />
+            </div>
+
+            <div class="form-group">
+                <label for="imageUrl">URL ảnh:</label>
+                <input id="imageUrl" @bind="product.ImageUrl" class="form-input" placeholder="https://images.unsplash.com/..." />
+                <ValidationMessage For="@(() => product.ImageUrl)" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Mô tả:</label>
+                <textarea id="description" @bind="product.Description" class="form-textarea" rows="4"></textarea>
+                <ValidationMessage For="@(() => product.Description)" />
+            </div>
+
+            <div class="form-group">
+                <label for="material">Chất liệu:</label>
+                <input id="material" @bind="product.Material" class="form-input" />
+                <ValidationMessage For="@(() => product.Material)" />
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Đánh giá (0-5):</label>
+                <input id="rating" type="number" min="0" max="5" @bind="product.Rating" class="form-input" />
+                <ValidationMessage For="@(() => product.Rating)" />
+            </div>
+
+            <div class="form-group">
+                <label for="stock">Tồn kho:</label>
+                <input id="stock" type="number" min="0" @bind="product.Stock" class="form-input" />
+                <ValidationMessage For="@(() => product.Stock)" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Cập nhật sản phẩm</button>
+                <a href="/admin/products" class="btn btn-outline">Quay lại danh sách</a>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? product;
+
+    protected override void OnInitialized()
+    {
+        product = AdminState.Products.FirstOrDefault(p => p.Id == Id);
+        if (product == null)
+        {
+            NavigationManager.NavigateTo("/admin/products");
+        }
+    }
+
+    private void HandleValidSubmit()
+    {
+        AdminState.UpdateProduct(product!);
+        NavigationManager.NavigateTo("/admin/products");
+    }
+}

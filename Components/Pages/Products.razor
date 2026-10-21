@@ -1,0 +1,102 @@
+@page "/products"
+@page "/products/{category?}"
+@using ShopAccessories.Models
+@using ShopAccessories.Data
+@using Microsoft.AspNetCore.Components.Web
+@inject NavigationManager NavigationManager
+
+<PageTitle>Sản phẩm</PageTitle>
+
+<div class="products-page">
+    <div class="filters">
+        <div class="search-box">
+            <input type="text" @bind="SearchTerm" @bind:event="oninput" placeholder="Tìm kiếm theo tên..." />
+        </div>
+        <div class="category-filters">
+            <span>Danh mục:</span>
+            @foreach (var category in Categories)
+            {
+                <a href="@($"/products/{category}")" class="@(SelectedCategory == category ? "active" : "")">@category</a>
+            }
+        </div>
+        <div class="sort-options">
+            <label for="sort">Sắp xếp:</label>
+            <select id="sort" @bind="SortOption" @bind:event="onchange">
+                <option value="name-asc">Tên A-Z</option>
+                <option value="name-desc">Tên Z-A</option>
+                <option value="price-asc">Giá tăng dần</option>
+                <option value="price-desc">Giá giảm dần</option>
+                <option value="rating-desc">Đánh giá cao nhất</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="product-grid">
+        @foreach (var product in FilteredAndSortedProducts)
+        {
+            <ProductCard Product="product" ShowOldPrice="true" />
+        }
+    </div>
+</div>
+
+@code {
+    private string SearchTerm = string.Empty;
+    private string? SelectedCategory;
+    private string SortOption = "name-asc";
+
+    private IEnumerable<Product> FilteredAndSortedProducts =>
+        ApplySort(ApplyFilters(ProductData.Products));
+
+    private IEnumerable<Product> ApplyFilters(IEnumerable<Product> products)
+    {
+        var filtered = products;
+
+        if (!string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            filtered = filtered.Where(p =>
+                p.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SelectedCategory))
+        {
+            filtered = filtered.Where(p => p.Category == SelectedCategory);
+        }
+
+        return filtered;
+    }
+
+    private IEnumerable<Product> ApplySort(IEnumerable<Product> products)
+    {
+        return SortOption switch
+        {
+            "name-asc" => products.OrderBy(p => p.Name),
+            "name-desc" => products.OrderByDescending(p => p.Name),
+            "price-asc" => products.OrderBy(p => p.Price),
+            "price-desc" => products.OrderByDescending(p => p.Price),
+            "rating-desc" => products.OrderByDescending(p => p.Rating),
+            _ => products
+        };
+    }
+
+    private IEnumerable<string> Categories => ProductData.Products
+        .Select(p => p.Category)
+        .Distinct()
+        .OrderBy(c => c);
+
+    protected override void OnParametersSet()
+    {
+        // If category is provided in the route, set it as selected
+        if (NavigationManager.Uri.Contains("/products/"))
+        {
+            var segments = NavigationManager.Uri.Split('/');
+            if (segments.Length > 4 && !string.IsNullOrEmpty(segments[4]))
+            {
+                SelectedCategory = Uri.UnescapeDataString(segments[4]);
+            }
+        }
+        else
+        {
+            SelectedCategory = null;
+        }
+    }
+}

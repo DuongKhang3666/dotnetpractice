@@ -1,0 +1,127 @@
+@page "/admin/orders"
+@layout AdminLayout
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@using System.Globalization
+@inject AdminStateService AdminState
+@inject NavigationManager NavigationManager
+
+<PageTitle>Quản lý đơn hàng</PageTitle>
+
+<div class="admin-orders-page">
+    <div class="page-header">
+        <h1>Quản lý đơn hàng</h1>
+    </div>
+
+    <div class="filters">
+        <div class="search-box">
+            <input type="text" @bind="SearchTerm" @bind:event="oninput" placeholder="Tìm theo tên khách hàng hoặc mã đơn..." />
+        </div>
+        <div class="status-filters">
+            <span>Trạng thái:</span>
+            <a href="/admin/orders" class="@(SelectedStatus == null ? "active" : "")">Tất cả</a>
+            @foreach (var status in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+            {
+                <a href="@($"/admin/orders/{status}")" class="@(SelectedStatus == status ? "active" : "")">@status.GetStatusText()</a>
+            }
+        </div>
+    </div>
+
+    <div class="order-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày tạo</th>
+                    <th>Tổng tiền</th>
+                    <th>Sản phẩm</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in FilteredOrders)
+                {
+                    <tr>
+                        <td>@order.Id</td>
+                        <td>@order.CustomerName</td>
+                        <td>@order.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        <td>@order.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                        <td>
+                            @foreach (var item in order.Items.Take(2))
+                            {
+                                <div class="order-item">
+                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="order-item-image" />
+                                    <span>@item.Product.Name x@item.Quantity</span>
+                                </div>
+                            }
+                            @if (order.Items.Count > 2)
+                            {
+                                <span>... và @(order.Items.Count - 2) sản phẩm khác</span>
+                            }
+                        </td>
+                        <td><span class="status-badge @order.StatusColor">@order.StatusText</span></td>
+                        <td>
+                            <a href="/admin/orders/@order.Id" class="btn btn-outline btn-sm">Chi tiết</a>
+                        </td>
+                    </tr>
+                }
+                @if (!FilteredOrders.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">Không có đơn hàng nào phù hợp với bộ lọc.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private string SearchTerm = string.Empty;
+    private OrderStatus? SelectedStatus;
+
+    private IEnumerable<Order> FilteredOrders =>
+        ApplyFilters(AdminState.Orders);
+
+    private IEnumerable<Order> ApplyFilters(IEnumerable<Order> orders)
+    {
+        var filtered = orders;
+
+        if (!string.IsNullOrWhiteSpace(SearchTerm))
+        {
+            var term = SearchTerm.ToLower();
+            filtered = filtered.Where(o =>
+                o.CustomerName.ToLower().Contains(term) ||
+                o.Id.ToString().Contains(term));
+        }
+
+        if (SelectedStatus.HasValue)
+        {
+            filtered = filtered.Where(o => o.Status == SelectedStatus.Value);
+        }
+
+        return filtered;
+    }
+
+    protected override void OnParametersSet()
+    {
+        // If status is provided in the route, set it as selected
+        if (NavigationManager.Uri.Contains("/admin/orders/"))
+        {
+            var segments = NavigationManager.Uri.Split('/');
+            if (segments.Length > 4 && !string.IsNullOrEmpty(segments[4]))
+            {
+                if (Enum.TryParse<OrderStatus>(segments[4], true, out var status))
+                {
+                    SelectedStatus = status;
+                }
+            }
+        }
+        else
+        {
+            SelectedStatus = null;
+        }
+    }
+}

@@ -1,0 +1,124 @@
+@page "/admin/orders/{Id:int}"
+@layout AdminLayout
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@using System.Globalization
+@inject AdminStateService AdminState
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<PageTitle>Chi tiết đơn hàng #@Order?.Id</PageTitle>
+
+@if (Order == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="admin-order-detail">
+        <div class="order-header">
+            <h1>Đơn hàng #@Order.Id</h1>
+            <div class="order-date">Ngày tạo: @Order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+        </div>
+
+        <div class="order-info">
+            <div class="customer-info">
+                <h3>Thông tin khách hàng</h3>
+                <p><strong>Họ và tên:</strong> @Order.CustomerName</p>
+                <p><strong>Số điện thoại:</strong> @Order.Phone</p>
+                <p><strong>Địa chỉ:</strong> @Order.Address</p>
+            </div>
+
+            <div class="order-items">
+                <h3>Sản phẩm trong đơn</h3>
+                <table class="order-items-table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Order.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="order-detail-product-image" />
+                                    <span>@item.Product.Name</span>
+                                </td>
+                                <td>@item.Product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Tổng cộng:</td>
+                            <td>@Order.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="order-status">
+                <h3>Trạng thái đơn hàng</h3>
+                <div class="status-display">
+                    <span class="status-badge @Order.StatusColor">@Order.StatusText</span>
+                </div>
+                <div class="status-update">
+                    <label for="statusSelect">Cập nhật trạng thái:</label>
+                    <select id="statusSelect" @bind="NewStatus" @bind:event="onchange">
+                        @foreach (var status in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                        {
+                            <option value="@status">@status.GetStatusText()</option>
+                        }
+                    </select>
+                    <button class="btn btn-primary" @onclick="UpdateStatus">Cập nhật</button>
+                </div>
+            </div>
+
+            <div class="order-actions">
+                <button class="btn btn-secondary" @onclick="PrintOrder">In đơn hàng</button>
+                <a href="/admin/orders" class="btn btn-outline">Quay lại danh sách</a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Order? Order { get; set; }
+    private OrderStatus NewStatus { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Order = AdminState.Orders.FirstOrDefault(o => o.Id == Id);
+        if (Order == null)
+        {
+            NavigationManager.NavigateTo("/admin/orders");
+        }
+        else
+        {
+            NewStatus = Order.Status;
+        }
+    }
+
+    private async Task UpdateStatus()
+    {
+        if (Order != null && NewStatus != Order.Status)
+        {
+            AdminState.UpdateOrderStatus(Order.Id, NewStatus);
+            Order.Status = NewStatus;
+        }
+    }
+
+    private async Task PrintOrder()
+    {
+        await JS.InvokeVoidAsync("window.print");
+    }
+}

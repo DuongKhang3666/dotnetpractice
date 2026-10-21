@@ -1,0 +1,129 @@
+@page "/checkout"
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using System.Linq.Expressions
+@inject CartService CartService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Thanh toán</PageTitle>
+
+@if (!CartService.GetCartItems().Any())
+{
+    <p>Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.</p>
+    <a href="/products" class="btn btn-primary">Mua sắm</a>
+}
+else
+{
+    <EditForm Model="@checkoutModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="checkout-form">
+            <h2>Thông tin thanh toán</h2>
+
+            <div class="form-group">
+                <label for="name">Họ và tên:</label>
+                <input id="name" @bind="checkoutModel.Name" class="form-input" />
+                <ValidationMessage For="@(() => checkoutModel.Name)" />
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Số điện thoại:</label>
+                <input id="phone" @bind="checkoutModel.Phone" class="form-input" />
+                <ValidationMessage For="@(() => checkoutModel.Phone)" />
+            </div>
+
+            <div class="form-group">
+                <label for="address">Địa chỉ:</label>
+                <textarea id="address" @bind="checkoutModel.Address" class="form-textarea" rows="3"></textarea>
+                <ValidationMessage For="@(() => checkoutModel.Address)" />
+            </div>
+        </div>
+
+        <div class="checkout-order-summary">
+            <h2>Tóm tắt đơn hàng</h2>
+            <table class="order-summary-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in CartService.GetCartItems())
+                    {
+                        <tr>
+                            <td>@item.Product.Name</td>
+                            <td>@item.Product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Tạm tính:</td>
+                        <td>@CartService.SubTotal.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">Phí ship:</td>
+                        <td>@(CartService.Shipping == 0 ? "Miễn phí" : CartService.Shipping.ToString("N0", new CultureInfo("vi-VN")) + " ₫")</td>
+                    </tr>
+                    <tr class="total">
+                        <td colspan="3">Tổng cộng:</td>
+                        <td>@CartService.GrandTotal.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary w-100">Đặt hàng</button>
+        </div>
+    </EditForm>
+}
+
+@if (showSuccess)
+{
+    <div class="checkout-success">
+        <h2>Cảm ơn bạn!</h2>
+        <p>Đơn hàng của bạn đã được đặt thành công.</p>
+        <a href="/" class="btn btn-primary">Trở về trang chủ</a>
+    </div>
+}
+
+@code {
+    private CheckoutModel checkoutModel = new();
+    private bool showSuccess = false;
+
+    private class CheckoutModel
+    {
+        [Required(ErrorMessage = "Vui lòng nhập họ và tên")]
+        [StringLength(100, ErrorMessage = "Họ và tên không vượt quá 100 ký tự")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [Phone(ErrorMessage = "Số điện thoại không hợp lệ")]
+        [RegularExpression(@"^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$", ErrorMessage = "Số điện thoại Việt Nam không đúng định dạng")]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
+        [StringLength(200, ErrorMessage = "Địa chỉ không vượt quá 200 ký tự")]
+        public string Address { get; set; } = string.Empty;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Here we would normally process the payment and save the order.
+        // Since we are not using a database, we just clear the cart and show success.
+        CartService.Clear();
+        showSuccess = true;
+
+        // Optionally, we can navigate to home after a delay.
+        // For simplicity, we just show the success message.
+    }
+}

@@ -1,0 +1,129 @@
+@page "/products/{Id:int}"
+@using ShopAccessories.Models
+@using ShopAccessories.Data
+@using ShopAccessories.Services
+@using System.Globalization
+@inject CartService CartService
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Product?.Name</PageTitle>
+
+@if (Product == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="product-detail">
+        <div class="product-detail-images">
+            <img src="@Product.ImageUrl" alt="@Product.Name" class="main-image" />
+            <!-- Thumbnail images could be added here -->
+        </div>
+        <div class="product-detail-info">
+            <h1 class="product-detail-title">@Product.Name</h1>
+            <div class="product-detail-price">
+                @if (Product.OldPrice.HasValue)
+                {
+                    <span class="old-price">@Product.OldPrice.Value.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+                }
+                <span class="current-price">@Product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+            </div>
+            <div class="product-detail-rating">
+                @for (int i = 0; i < 5; i++)
+                {
+                    <i class="@(i < Product.Rating ? "fi fi-ss-star" : "fi fi-ss-star-outline")"></i>
+                }
+                <span> (@Product.Rating)</span>
+            </div>
+            <div class="product-detail-stock @GetStockClass()">
+                @GetStockText()
+            </div>
+            <div class="product-detail-material">
+                <strong>Chất liệu:</strong> @Product.Material
+            </div>
+            <div class="product-detail-description">
+                <strong>Mô tả:</strong>
+                <p>@Product.Description</p>
+            </div>
+            <div class="product-detail-actions">
+                <div class="quantity-selector">
+                    <span>Số lượng:</span>
+                    <input type="number" min="1" @bind="Quantity" @bind:event="oninput" style="width: 60px;" />
+                </div>
+                <button class="btn btn-primary" @onclick="AddToCart">
+                    Thêm vào giỏ hàng
+                </button>
+                <button class="btn btn-secondary" @onclick="BuyNow">
+                    Mua ngay
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-products">
+        <h2>Sản phẩm liên quan</h2>
+        <div class="product-grid">
+            @foreach (var related in RelatedProducts)
+            {
+                <ProductCard Product="related" ShowOldPrice="false" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Product? Product { get; set; }
+    private int Quantity { get; set; } = 1;
+    private List<Product> RelatedProducts = new();
+
+    protected override void OnInitialized()
+    {
+        Product = ProductData.Products.FirstOrDefault(p => p.Id == Id);
+        if (Product != null)
+        {
+            // Get related products (same category, excluding current product)
+            RelatedProducts = ProductData.Products
+                .Where(p => p.Category == Product.Category && p.Id != Product.Id)
+                .Take(4)
+                .ToList();
+        }
+    }
+
+    private void AddToCart()
+    {
+        if (Product != null)
+        {
+            CartService.AddToCart(Product, Quantity);
+            NavigationManager.NavigateTo("/cart");
+        }
+    }
+
+    private void BuyNow()
+    {
+        if (Product != null)
+        {
+            CartService.Clear();
+            CartService.AddToCart(Product, Quantity);
+            NavigationManager.NavigateTo("/checkout");
+        }
+    }
+
+    private string GetStockClass()
+    {
+        if (Product == null) return "";
+        if (Product.Stock == 0) return "out-of-stock";
+        if (Product.Stock < 5) return "low-stock";
+        return "in-stock";
+    }
+
+    private string GetStockText()
+    {
+        if (Product == null) return "";
+        if (Product.Stock == 0) return "Hết hàng";
+        if (Product.Stock < 5) return "Sắp hết hàng";
+        return "Còn hàng";
+    }
+}

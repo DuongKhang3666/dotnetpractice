@@ -1,0 +1,46 @@
+@using ShopAccessories.Models
+@using System.Globalization
+
+<div class="product-card">
+    <img src="@Product.ImageUrl" alt="@Product.Name" />
+    <div class="product-card-body">
+        @if (ShowOldPrice && Product.OldPrice.HasValue)
+        {
+            <span class="product-card-old-price">@Product.OldPrice.Value.ToString("N0", new CultureInfo("vi-VN")) ₫</span>
+        }
+        <div class="product-card-price">@Product.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</div>
+        <h3 class="product-card-title">@Product.Name</h3>
+        <div class="product-card-rating">
+            @for (int i = 0; i < 5; i++)
+            {
+                <i class="@(i < Product.Rating ? "fi fi-ss-star" : "fi fi-ss-star-outline")"></i>
+            }
+        </div>
+        <div class="product-card-stock @GetStockClass()">
+            @GetStockText()
+        </div>
+        <a href="/products/@Product.Id" class="btn btn-outline">Xem chi tiết</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Product Product { get; set; } = default!;
+
+    [Parameter]
+    public bool ShowOldPrice { get; set; }
+
+    private string GetStockClass()
+    {
+        if (Product.Stock == 0) return "out-of-stock";
+        if (Product.Stock < 5) return "low-stock";
+        return "in-stock";
+    }
+
+    private string GetStockText()
+    {
+        if (Product.Stock == 0) return "Hết hàng";
+        if (Product.Stock < 5) return "Sắp hết hàng";
+        return "Còn hàng";
+    }
+}

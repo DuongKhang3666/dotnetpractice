@@ -1,0 +1,92 @@
+@page "/admin/customers"
+@layout AdminLayout
+@using ShopAccessories.Models
+@using ShopAccessories.Services
+@using System.Globalization
+@inject AdminStateService AdminState
+@inject NavigationManager NavigationManager
+
+<PageTitle>Quản lý khách hàng</PageTitle>
+
+<div class="admin-customers-page">
+    <div class="page-header">
+        <h1>Quản lý khách hàng</h1>
+    </div>
+
+    <div class="filters">
+        <div class="search-box">
+            <input type="text" @bind="SearchTerm" @bind:event="oninput" placeholder="Tìm theo tên, email hoặc số điện thoại..." />
+        </div>
+    </div>
+
+    <div class="customer-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Avatar</th>
+                    <th>Tên khách hàng</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Thành phố</th>
+                    <th>Ngày tham gia</th>
+                    <th>Số đơn hàng</th>
+                    <th>Tổng chi tiêu</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (customer, index) in FilteredCustomers.Select((c, i) => (c, i)))
+                {
+                    <tr>
+                        <td>@(index + 1)</td>
+                        <td>
+                            <div class="customer-avatar">
+                                @GetInitials(customer.Name)
+                            </div>
+                        </td>
+                        <td>@customer.Name</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.Phone</td>
+                        <td>@customer.City</td>
+                        <td>@customer.JoinedAt.ToString("dd/MM/yyyy")</td>
+                        <td>@customer.OrdersCount</td>
+                        <td>@customer.TotalSpent.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                    </tr>
+                }
+                @if (!FilteredCustomers.Any())
+                {
+                    <tr>
+                        <td colspan="9" class="text-center">Không có khách hàng nào phù hợp với bộ lọc.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private string SearchTerm = string.Empty;
+
+    private IEnumerable<Customer> FilteredCustomers =>
+        AdminState.Customers.Where(c =>
+            c.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+            c.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+            c.Phone.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+
+    private string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "?";
+
+        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length == 0)
+            return "?";
+
+        if (words.Length == 1)
+        {
+            return words[0][0].ToString().ToUpper();
+        }
+
+        return (words[0][0].ToString().ToUpper() + words[words.Length - 1][0].ToString().ToUpper()).ToString();
+    }
+}

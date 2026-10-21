@@ -1,0 +1,89 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ShopAccessories.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.sln||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ShopAccessories.sln||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ShopAccessories.csproj",
+              "DocumentMoniker": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.csproj",
+              "RelativeDocumentMoniker": "ShopAccessories.csproj",
+              "ToolTip": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.csproj",
+              "RelativeToolTip": "ShopAccessories.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-10-19T08:22:09.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ShopAccessories.sln",
+              "DocumentMoniker": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.sln",
+              "RelativeDocumentMoniker": "ShopAccessories.sln",
+              "ToolTip": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\ShopAccessories.sln",
+              "RelativeToolTip": "ShopAccessories.sln",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002855|",
+              "WhenOpened": "2026-10-19T08:20:31.101Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Work_space\\bt_dotnet\\Bai2\\21_NguyenDuongKhang_Nhom6_3123410151\\ShopAccessories\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-19T08:11:29.296Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 1206,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
